@@ -10,11 +10,19 @@ from .models import Video
 
 class VideoCreateView(CreateView):
     queryset = Video.objects.all()
-    template_name = 'index.html'
 
 
 class VideoDetailView(DetailView):
     queryset = Video.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(VideoDetailView, self).get_context_data(**kwargs)
+        print(context)
+        # {'paginator': None, 'page_obj': None, 'is_paginated': False,
+        # 'object_list': <QuerySet [<Video: django 2.2>, <Video: django 1.11>]>,
+        # 'video_list': <QuerySet [<Video: django 2.2>, <Video: django 1.11>]>,
+        # 'view': <videos.views.VideoListView object at 0x10733c1d0>}
+        return context
 
 
 class VideoListView(ListView):
@@ -23,6 +31,8 @@ class VideoListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(VideoListView, self).get_context_data(**kwargs)
         print(context)
+        # {'object': <Video: django 2.2>, 'video': <Video: django 2.2>,
+        # 'view': <videos.views.VideoDetailView object at 0x10c15d4a8>}
         return context
 
 

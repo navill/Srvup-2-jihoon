@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 Viedo | {{ block.super }}
 {% endblock %}
@@ -11,10 +10,10 @@ Viedo | {{ block.super }}
 <h1>Hello!!</h1>
 
 {{ object_list }}
-
 <ul>
-    {% for item in object_list%}
-    <li>{{ item.title}}</li>
-    {% endfor %}
+    <li>{{ object.title }}</li>
+    <li>{{ object.embed_code|safe }}</li>
+    <li>{{ object.updated }}</li>
+    <li>{{ object.id }}</li>
 </ul>
 {% endblock %}
