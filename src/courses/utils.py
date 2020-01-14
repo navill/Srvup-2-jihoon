@@ -5,7 +5,7 @@ import string
 from django.utils.text import slugify
 
 
-from .models import Course
+# from .models import Course
 
 def unique_string_generator(size=5, chars=string.ascii_lowercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))
