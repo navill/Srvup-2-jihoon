@@ -10,11 +10,16 @@ Viedo | {{ block.super }}
 
 <h1>Hello!!</h1>
 
-{{ object_list }}
+{% include 'videos/snippets/video_search_form.html' with request=request %}
 
 <ul>
     {% for item in object_list%}
-    <li>{{ item.title}}</li>
+    <li>
+        <a href="{{ item.get_absolute_url }}">
+            {{ item.title}}
+        </a></li>
+    {% empty %}
+    <li>No item Found</li>
     {% endfor %}
 </ul>
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+Viedo | {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+<form method="POST" action="" >
+    {% csrf_token %}
+    <p><b>{{ object.title }}</b> 게시글을 삭제 하시겠습니까?</p>
+    <input type="submit" value="Yes">
+    <a href="{{ object.get_absolute_url }}">No</a>
+</form>
+{% endblock %}

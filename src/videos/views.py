@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 
+from .mixins import MemberRequiredMixin
+from .forms import VideoForm
 from .models import Video
 
 
@@ -9,36 +11,37 @@ from .models import Video
 # CRUDL
 
 class VideoCreateView(CreateView):
-    queryset = Video.objects.all()
+    # queryset = Video.objects.all()  # ImproperlyConfigured 에러를 일으킨다.
+    model = Video
+    form_class = VideoForm
 
 
-class VideoDetailView(DetailView):
+class VideoDetailView(MemberRequiredMixin, DetailView):
     queryset = Video.objects.all()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(VideoDetailView, self).get_context_data(**kwargs)
-        print(context)
-        # {'paginator': None, 'page_obj': None, 'is_paginated': False,
-        # 'object_list': <QuerySet [<Video: django 2.2>, <Video: django 1.11>]>,
-        # 'video_list': <QuerySet [<Video: django 2.2>, <Video: django 1.11>]>,
-        # 'view': <videos.views.VideoListView object at 0x10733c1d0>}
         return context
 
 
 class VideoListView(ListView):
-    queryset = Video.objects.all()
+    def get_queryset(self):
+        q = self.request.GET.get('q')
+        qs = Video.objects.all()
+        if q:  # query string이 있을 경우
+            qs = qs.filter(title__icontains=q)
+        return qs
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(VideoListView, self).get_context_data(**kwargs)
-        print(context)
-        # {'object': <Video: django 2.2>, 'video': <Video: django 2.2>,
-        # 'view': <videos.views.VideoDetailView object at 0x10c15d4a8>}
         return context
 
 
 class VideoUpdateView(UpdateView):
     queryset = Video.objects.all()
+    form_class = VideoForm
 
 
 class VideoDeleteView(DeleteView):
     queryset = Video.objects.all()
+    success_url = '/videos/'
