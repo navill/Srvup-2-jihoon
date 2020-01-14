@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}
+Viedo | {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Hello!!</h1>
+
+{{ object_list }}
+<ul>
+    <li>{{ object.title }}</li>
+    <li>{{ object.embed_code|safe }}</li>
+    <li>{{ object.updated }}</li>
+    <li>{{ object.id }}</li>
+</ul>
+{% endblock %}

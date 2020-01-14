@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Courses | {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Hello!!</h1>
+
+
+<ul>
+    {% for item in object_list%}
+    <li>
+        <a href="{{ item.get_absolute_url }}">
+            {{ item.title}}
+        </a></li>
+    {% empty %}
+    <li>No item Found</li>
+    {% endfor %}
+</ul>
+{% endblock %}

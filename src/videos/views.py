@@ -1,16 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 
-from .mixins import MemberRequiredMixin
+from .mixins import MemberRequiredMixin, StaffMemberRequiredMixin
 from .forms import VideoForm
 from .models import Video
 
 
-# Create your views here.
-
 # CRUDL
-
-class VideoCreateView(CreateView):
+class VideoCreateView(StaffMemberRequiredMixin, CreateView):
     # queryset = Video.objects.all()  # ImproperlyConfigured 에러를 일으킨다.
     model = Video
     form_class = VideoForm
@@ -37,11 +34,11 @@ class VideoListView(ListView):
         return context
 
 
-class VideoUpdateView(UpdateView):
+class VideoUpdateView(StaffMemberRequiredMixin, UpdateView):
     queryset = Video.objects.all()
     form_class = VideoForm
 
 
-class VideoDeleteView(DeleteView):
+class VideoDeleteView(StaffMemberRequiredMixin, DeleteView):
     queryset = Video.objects.all()
     success_url = '/videos/'

@@ -1,18 +1,19 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from config.views import home, HomeView
-from videos.views import VideoListView, VideoDetailView, VideoCreateView, VideoUpdateView, VideoDeleteView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('home/', home, name='home'),
     path('', HomeView.as_view(), name='home'),
-    path('videos/', VideoListView.as_view(), name='video-list'),
-    path('videos/create', VideoCreateView.as_view(), name='video-create'),
-    # path('videos/<int:pk>', VideoDetailView.as_view(), name='video-detail'),
-    path('videos/<slug>', VideoDetailView.as_view(), name='video-detail-slug'),
-    path('videos/<slug>/edit/', VideoUpdateView.as_view(), name='video-update'),
-    path('videos/<slug>/delete/', VideoDeleteView.as_view(), name='video-delete')
-
+    path('courses/', include('courses.urls')),
+    path('videos/', include('videos.urls')),
 ]
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+# local(development) 개발 시 아래의 static과 media 파일을 사용한다.
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
