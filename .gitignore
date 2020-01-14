@@ -12,6 +12,7 @@ media
 static/
 migrations/
 secret.py
+.DS_Store
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
@@ -373,3 +374,5 @@ secret.py
 secret_key.py
 s3_upload.py
 temp.py
+static_in_env/
+static_root/
