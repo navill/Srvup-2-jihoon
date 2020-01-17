@@ -9,4 +9,4 @@
 - Day-1 [Blog](https://dev-navill.tistory.com/9?category=786371) / [Github](https://github.com/navill/Srvup-2-jihoon/tree/89ded70efc1c0d4ac85c6b8f77e580d1a2fef541)
 - Day-2 [Blog](https://dev-navill.tistory.com/10) / [Github](https://github.com/navill/Srvup-2-jihoon/tree/d16a3f10cd75bc345831307f750383922258ac5e)
 - Day-3 [Blog](https://dev-navill.tistory.com/13) / [Github](https://github.com/navill/Srvup-2-jihoon/tree/0ef1e31ed083c20afa4b98eff21696d9617c78dc)
-- Day-4 [Blog] / [Github]
+- Day-4 [Blog](https://dev-navill.tistory.com/16) / [Github](https://github.com/navill/Srvup-2-jihoon/tree/f40b7c397958dbe5c278b359e06e26c2076bd8a1)
