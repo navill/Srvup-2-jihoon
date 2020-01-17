@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+
 {% block title %}
 Viedo | {{ block.super }}
 {% endblock %}
@@ -8,12 +8,16 @@ Viedo | {{ block.super }}
 {% block content %}
 <div class="row">
     <div class="col-sm-6 offset-sm-3" style="background-color:#ccc">
+        {% include 'videos/snippets/video_search_form.html' with request=request %}
+
         <h1>Hello!!</h1>
-        <form method="POST" action="">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Save" class="btn btn-default">
-        </form>
+
+        {{ object.title }}
+        <br>
+        {{ object.video.embed_code|safe }}
+        {{ object.updated }}
+        {{ object.id }}
+
     </div>
 </div>
 {% endblock %}

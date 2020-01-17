@@ -1,19 +1,33 @@
 {% extends "base.html" %}
-
+{% load humanize %}
 {% block title %}
 Viedo | {{ block.super }}
 {% endblock %}
 
 
 {% block content %}
+<div class="row">
+    <div class="col-sm-6 offset-sm-3" style="background-color:#ccc">
 
-<h1>Hello!!</h1>
-
-{{ object_list }}
-<ul>
-    <li>{{ object.title }}</li>
-    <li>{{ object.embed_code|safe }}</li>
-    <li>{{ object.updated }}</li>
-    <li>{{ object.id }}</li>
-</ul>
+        {% include 'videos/snippets/video_search_form.html' with request=request %}
+        <h1>{{ object.title }}</h1>
+        {{ object.description |linebreaks }}
+        {% if not object.is_owner %}
+        <a href="{{ object.get_purchase_url }}">Purchase</a>
+            {{ object.display_price }}
+        {% endif %}
+        <p>
+        <ul>
+            {% for item in object.lecture_set.all%}
+            <li>{{ item.order }}
+                <a href="{{ item.get_absolute_url }}">
+                    {{ item.title}}<br>
+                </a></li>
+            {% empty %}
+            <li>No lectures Found</li>
+            {% endfor %}
+        </ul>
+        </p>
+    </div>
+</div>
 {% endblock %}

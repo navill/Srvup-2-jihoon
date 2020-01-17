@@ -6,8 +6,13 @@ from django.utils.decorators import method_decorator
 class MemberRequiredMixin(object):
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
-        if request.user.is_staff or obj.free:
+        if request.user.is_staff:
             return super().dispatch(request, *args, **kwargs)
+        try:
+            if obj.free:
+                return super(MemberRequiredMixin, self).dispatch(request, *args, **kwargs)
+        except:
+            pass
         return HttpResponse('무료로 제공되는 동영상이 아닙니다.')
 
 

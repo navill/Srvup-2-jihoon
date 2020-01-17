@@ -6,14 +6,17 @@ Viedo | {{ block.super }}
 
 
 {% block content %}
+<div class="row">
+    <div class="col-sm-8 offset-sm-2" style="background-color:#ccc">
+        <h1>Hello!!</h1>
+        {% include 'videos/snippets/video_search_form.html' with request=request %}
 
-<h1>Hello!!</h1>
-
-{{ object_list }}
-<ul>
-    <li>{{ object.title }}</li>
-    <li>{{ object.embed_code|safe }}</li>
-    <li>{{ object.updated }}</li>
-    <li>{{ object.id }}</li>
-</ul>
+        <ul>
+            <li>{{ object.title }}</li>
+            <li>{{ object.embed_code|safe }}</li>
+            <li>{{ object.updated }}</li>
+            <li>{{ object.id }}</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

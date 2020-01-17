@@ -6,11 +6,14 @@ Viedo | {{ block.super }}
 
 
 {% block content %}
-
-<form method="POST" action="" >
-    {% csrf_token %}
-    <p><b>{{ object.title }}</b> 게시글을 삭제 하시겠습니까?</p>
-    <input type="submit" value="Yes">
-    <a href="{{ object.get_absolute_url }}">No</a>
-</form>
+<div class="row">
+    <div class="col-sm-8 offset-sm-2" style="background-color:#ccc">
+        <form method="POST" action="">
+            {% csrf_token %}
+            <p><b>{{ object.title }}</b> 게시글을 삭제 하시겠습니까?</p>
+            <input type="submit" value="Yes">
+            <a href="{{ object.get_absolute_url }}">No</a>
+        </form>
+    </div>
+</div>
 {% endblock %}

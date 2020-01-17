@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load humanize %}
 
 {% block title %}
 Courses | {{ block.super }}
@@ -7,18 +7,26 @@ Courses | {{ block.super }}
 
 
 {% block content %}
+<div class="row">
+    <div class="col-sm-6 offset-sm-3" style="background-color:#ccc">
+        <h1>Hello!!</h1>
+        <ul>
+            {% for item in object_list%}
+            <li>
+                <a href="{{ item.get_absolute_url }}">
+                    {{ item.title}}
+                </a><small>{{ item.lecture_set.count }} Lectures</small> |
+                {% if item.is_owner %}
+                    Owned
+                {% else %}
+                    <a href="{{ object.get_purchase_url }}">Purchase:</a> {{ item.display_price }}
+                {% endif %}<br><br>
 
-<h1>Hello!!</h1>
-
-
-<ul>
-    {% for item in object_list%}
-    <li>
-        <a href="{{ item.get_absolute_url }}">
-            {{ item.title}}
-        </a></li>
-    {% empty %}
-    <li>No item Found</li>
-    {% endfor %}
-</ul>
+            </li>
+            {% empty %}
+            <li>No item Found</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

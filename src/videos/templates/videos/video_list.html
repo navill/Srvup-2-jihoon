@@ -9,17 +9,20 @@ Viedo | {{ block.super }}
 {% block content %}
 
 <h1>Hello!!</h1>
+<div class="row">
+    <div class="col-sm-8 offset-sm-2" style="background-color:#ccc">
+        {% include 'videos/snippets/video_search_form.html' with request=request %}
 
-{% include 'videos/snippets/video_search_form.html' with request=request %}
-
-<ul>
-    {% for item in object_list%}
-    <li>
-        <a href="{{ item.get_absolute_url }}">
-            {{ item.title}}
-        </a></li>
-    {% empty %}
-    <li>No item Found</li>
-    {% endfor %}
-</ul>
+        <ul>
+            {% for item in object_list%}
+            <li>
+                <a href="{{ item.get_absolute_url }}">
+                    {{ item.title}}
+                </a></li>
+            {% empty %}
+            <li>No item Found</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}
