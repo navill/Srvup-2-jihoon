@@ -1,5 +1,5 @@
 from django import forms
-
+from django.db.models import Q
 from videos.models import Video
 from .models import Course, Lecture
 
@@ -8,14 +8,14 @@ class LectureAdminForm(forms.ModelForm):
     class Meta:
         model = Lecture
         fields = [
-            'order', 'title', 'video', 'description', 'slug'
+            'order', 'title', 'video', 'description','free', 'slug'
         ]
 
     def __init__(self, *args, **kwargs):
         super(LectureAdminForm, self).__init__(*args, **kwargs)
         obj = kwargs.get('instance')  # Lecture
         # lecture에서 video를 가지고 있지 않은(null) Video 객체를 filtering
-        qs = Video.objects.filter(lecture__isnull=True)  # video0, ...
+        qs = Video.objects.unused()
         if obj:
             if obj.video:
                 this_ = Video.objects.filter(pk=obj.video.pk)

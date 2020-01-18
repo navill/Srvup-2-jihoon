@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Prefetch
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import *
+
+from analytics.models import CourseEventView
 from videos.mixins import MemberRequiredMixin, StaffMemberRequiredMixin
 # from .forms import VideoForm
 from .forms import CourseForm
@@ -16,29 +18,59 @@ class CourseCreateView(StaffMemberRequiredMixin, CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
-        print(id(obj), id(form))
         obj.user = self.request.user
         obj.save()
         # int_passed = form.cleaned_data.get('number')  # extra field
         return super(CourseCreateView, self).form_valid(form)
 
 
-class LectureDetailView(MemberRequiredMixin, DetailView):
-    def get_object(self, queryset=None):
-        course_slug = self.kwargs.get('cslug')
-        lecture_slug = self.kwargs.get('lslug')
-        obj = get_object_or_404(Lecture, course__slug=course_slug, slug=lecture_slug)
-        return obj
+class LectureDetailView(View):
+    def get(self, request, cslug=None, lslug=None, *args, **kwargs):
+        user = request.user
+        # cslug에 해당하는 Course 객체 중, MyCourse에 등록되어있는 course를 prefetch_related(lecture_set)와 함께 가져온다
+        # course_obj = filter:cslug + prefetch_related(lecture_set) + MyCourses.filter(user)
+        qs = Course.objects.filter(slug=cslug).lectures().owned(user)
+        if not qs.exists():
+            raise Http404
+        # course_obj
+        course_ = qs.first()
+        if user.is_authenticated:
+            view_event, created = CourseEventView.objects.get_or_create(user=user, course=course_)
+            if view_event:
+                view_event.views += 1
+                view_event.save()
+        lecture_qs = course_.lecture_set.filter(slug=lslug)  # == Lecture.objects.filter(course=course_)
+        if not lecture_qs.exists():
+            raise Http404
+        # lecture_obj
+        obj = lecture_qs.first()
+
+        context = {
+            'object': obj,
+            'course': course_,
+        }
+        # 소유자(MyCourse에 등록된 강좌)만 접속할 수 있도록
+        if not course_.is_owner and not obj.free:  # and not user.is_member:
+            return render(request, 'courses/must_purchase.html', {'object': course_})
+        return render(request, 'courses/lecture_detail.html', context=context)
 
 
-class CourseDetailView(MemberRequiredMixin, DetailView):
+class CourseDetailView(DetailView):
 
     def get_object(self, queryset=None):
         slug = self.kwargs.get('slug')
+        user = self.request.user
+        qs = None
         # obj = Course.objects.get(slug=slug) # MultipleOjbectsReturned 에러(동일한 slug가 여럿 존재할 경우)
-        qs = Course.objects.filter(slug=slug).owned(self.request.user)  # -> is_owner 속성 사용 가능
+        qs = Course.objects.filter(slug=slug).lectures().owned(user)
         if qs.exists():
-            return qs.first()
+            obj = qs.first()
+            if self.request.user.is_authenticated:
+                view_event, created = CourseEventView.objects.get_or_create(user=user, course=obj)
+                if view_event:
+                    view_event.views += 1
+                    view_event.save()
+            return obj
         raise Http404
 
 
@@ -58,6 +90,13 @@ class CoursePurchaseView(LoginRequiredMixin, RedirectView):
 
 
 class CourseListView(ListView):
+    # 페이지당 9개씩 출력
+    paginate_by = 9
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
     def get_queryset(self):
         q = self.request.GET.get('q')
         qs = Course.objects.all()

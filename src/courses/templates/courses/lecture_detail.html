@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load render_video %}
 
 {% block title %}
 Viedo | {{ block.super }}
@@ -6,17 +7,19 @@ Viedo | {{ block.super }}
 
 
 {% block content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'courses:list' %}">Courses</a></li>
+  <li><a href="{{ object.course.get_absolute_url}}">{{ object.course.title }}</a></li>
+  <li class="active">{{ object.title }}</li>
+</ol>
 <div class="row">
-    <div class="col-sm-6 offset-sm-3" style="background-color:#ccc">
-        {% include 'videos/snippets/video_search_form.html' with request=request %}
+    <div class="col-sm-6 col-sm-offset-3" style="background-color:#ccc">
+        <h1>{{ object.title }}</h1>
 
-        <h1>Hello!!</h1>
+        {% render_video object.video %}
 
-        {{ object.title }}
-        <br>
-        {{ object.video.embed_code|safe }}
-        {{ object.updated }}
-        {{ object.id }}
+        <p>{{ object.updated }}</p>
+        <p>{{ object.description }}</p>
 
     </div>
 </div>

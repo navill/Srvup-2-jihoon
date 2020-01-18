@@ -2,12 +2,31 @@
 
 {% block content %}
 
-<h1>Hello, {{ name }}!</h1>
-<p>request: {{ request }}</p>
-<p>auth: {{ user }}</p>
-{% if user.is_authenticated %}
-hi {{ name }}
-{% endif %}
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Recommended</h1>
+    </div>
+    {% for item in rec_courses %}
 
-{% include 'defaults/scripts.html' %}
+    {% if not item.is_owner %}
+    <div class="col-sm-2">
+        {% include 'courses/snippets/course_featured_display.html' with course=item %}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+</div>
+
+<div class="col-sm-12">
+    <hr>
+</div>
+
+<div class="row">
+    {% for item in qs %}
+    <div class="col-sm-2">
+        {% include 'courses/snippets/course_thumbnail_display.html' with course=item %}
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

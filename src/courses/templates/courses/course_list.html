@@ -7,26 +7,63 @@ Courses | {{ block.super }}
 
 
 {% block content %}
-<div class="row">
-    <div class="col-sm-6 offset-sm-3" style="background-color:#ccc">
-        <h1>Hello!!</h1>
-        <ul>
-            {% for item in object_list%}
-            <li>
-                <a href="{{ item.get_absolute_url }}">
-                    {{ item.title}}
-                </a><small>{{ item.lecture_set.count }} Lectures</small> |
-                {% if item.is_owner %}
-                    Owned
-                {% else %}
-                    <a href="{{ object.get_purchase_url }}">Purchase:</a> {{ item.display_price }}
-                {% endif %}<br><br>
 
-            </li>
+
+<div class="row">
+    <div class="col-sm-12" style="background-color:#ccc">
+        <h1>Courses</h1>
+
+        {% if request.GET.q %}
+        <p>You searched for <b>{{ request.GET.q}}</b></p>
+        {% endif %}
+
+        <div class='row'>
+            {% for item in object_list %}
+            <div class='col-md-4 col-sm-12'>
+                {% include 'courses/snippets/course_thumbnail_display.html' with course=item %}
+            </div>
+
+
+            {% if forloop.counter|divisibleby:3 %}
+        </div>
+        <div class="row">
+            {% endif %}
+
+
             {% empty %}
-            <li>No item Found</li>
+            <p class='lead'>No item found</p>
             {% endfor %}
-        </ul>
+
+        </div>
+
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li><a href="{% url 'courses:list' %}?page=1">First</a></li>
+                <li><a href="{% url 'courses:list' %}?page={{ page_obj.previous_page_number }}"><span aria-hidden="true">&laquo;</span></a></li>
+                <li><a href="{% url 'courses:list' %}?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+
+
+                <li class="active"><a href="#">{{ page_obj.number}}</a></li>
+
+                {% if page_obj.has_next %}
+                <li><a href="{% url 'courses:list' %}?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                <li><a href="{% url 'courses:list' %}?page={{ page_obj.next_page_number }}"><span aria-hidden="true">&raquo;</span></a></li>
+                <li><a href="{% url 'courses:list' %}?page={{ paginator.num_pages }}">Last</a></li>
+
+                {% endif %}
+            </ul>
+        </nav>
+
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+
     </div>
 </div>
 {% endblock %}

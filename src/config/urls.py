@@ -5,9 +5,12 @@ from config.views import home, HomeView
 import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomeView.as_view(), name='home'),
     path('courses/', include('courses.urls')),
+    path('categories/', include('categories.urls')),
     path('videos/', include('videos.urls')),
+    path('search/', include('search.urls')),
+    path('', HomeView.as_view(), name='home'),
+
 ]
 
 from django.conf import settings

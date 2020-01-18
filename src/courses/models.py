@@ -1,28 +1,41 @@
 from django.db import models
 from django.conf import settings
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
 
+from categories.models import Category
 from courses.fields import PositionField
 from courses.utils import create_slug, make_display_price
 from videos.models import Video
 
-POS_CHOICES = (
-    ('main', 'Main'),
-    ('sec', 'Secondary'),
-)
+
+# POS_CHOICES = (
+#     ('main', 'Main'),
+#     ('sec', 'Secondary'),
+# )
 
 
 class CourseQuerySet(models.QuerySet):
     def active(self):
-        print('active')
         return self.filter(active=True)
 
+    def lectures(self):
+        # course_obj에 연결된 lecture
+        return self.prefetch_related('lecture_set')
+
+    def featured(self):
+        return self.filter(Q(category__slug__iexact='featured')| Q(secondary__slug__iexact='featured'))
+
+    # MyCourse에 연결된 Course를 가져오기위한 메서드
     def owned(self, user):
+        if user.is_authenticated:
+            qs = MyCourses.objects.filter(user=user)
+        else:
+            qs = MyCourses.objects.none()
         return self.prefetch_related(
             # owned: MyCourses가 가리키고있는 Course에 대한 related_name
-            Prefetch('owned', queryset=MyCourses.objects.filter(user=user), to_attr='is_owner'))
+            Prefetch('owned', queryset=qs, to_attr='is_owner'))
 
 
 class CourseManager(models.Manager):
@@ -30,15 +43,29 @@ class CourseManager(models.Manager):
         return CourseQuerySet(self.model, using=self._db)
 
     def all(self):
-        # return self.get_queryset.all().active()  # -> error
-        return super().all().active()
+        # return self.get_queryset().all().active()
+        return super(CourseManager, self).all()
+
+
+def handle_upload(instance, filename):
+    if instance.slug:
+        return f"{instance.slug}/images/{filename}"
+    return f"unknown/images/{filename}"
 
 
 class Course(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=120)
     slug = models.SlugField(blank=True, null=True)
-    category = models.CharField(max_length=120, choices=POS_CHOICES, default='main')
+    image_height_field = models.IntegerField(blank=True, null=True)
+    image_width_field = models.IntegerField(blank=True, null=True)
+    image = models.ImageField(upload_to=handle_upload,
+                              height_field='image_height_field',
+                              width_field='image_width_field',
+                              blank=True, null=True)
+    category = models.ForeignKey(Category, related_name='primary_category', on_delete=models.SET_NULL, null=True,
+                                 blank=True)
+    secondary = models.ManyToManyField(Category, related_name='secondary_category', blank=True)
     order = PositionField(collection='category')
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(decimal_places=2, max_digits=100)
@@ -48,9 +75,9 @@ class Course(models.Model):
 
     objects = CourseManager()
 
-    class Meta:
-        # slug+course = unique -> 두 개의 필드가 동일하지 않도록 함
-        ordering = ['category', 'order']
+    # class Meta:
+    #     # slug+course = unique -> 두 개의 필드가 동일하지 않도록 함
+    #     ordering = ['category', 'order']
 
     def __str__(self):
         return self.title
@@ -64,6 +91,14 @@ class Course(models.Model):
     # template에서 {{ item.price | intcomma }}로 사용할 수 있음
     def display_price(self):
         return make_display_price(self.price)
+
+
+def post_save_course_receiver(sender, instance, created, *args, **kwargs):
+    if instance.category not in instance.secondary.all():
+        instance.secondary.add(instance.category)
+
+
+post_save.connect(post_save_course_receiver, sender=Course)
 
 
 # # 관리자의 입장에서 유저들이 등록한 courses를 나타낼 때
@@ -107,6 +142,7 @@ class Lecture(models.Model):
     title = models.CharField(max_length=120)
     order = PositionField(collection='course')
     slug = models.SlugField(blank=True, null=True)
+    free = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

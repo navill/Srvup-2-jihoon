@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Categories</h1>
+    </div>
+    <div class="col-sm-3">
+        <div class="list-group">
+            {% for item in object_list%}
+            <a href="{{ item.get_absolute_url }}" class="list-group-item list-group-item-action">
+                {{ forloop.counter }} - {{ item.title }}
+                {{ item.courses_length }}
+
+                {% if item.courses_length > 0 %}
+                <span class="badge">{{ item.courses_length }}
+                Course{% if courses_length > 1 %}s{% endif %}</span>
+                {% endif %}
+
+                {% if item.primary_category.exists %}
+                <span class="badge">{{ item.primary_category.all.count }}
+                Featured</span>
+                {% endif %}
+            </a>
+
+            {% if forloop.counter|divisibleby:4 %}
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="list-group">
+            {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+	

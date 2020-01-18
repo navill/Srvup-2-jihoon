@@ -13,7 +13,7 @@ class VideoCreateView(StaffMemberRequiredMixin, CreateView):
     form_class = VideoForm
 
 
-class VideoDetailView(MemberRequiredMixin, DetailView):
+class VideoDetailView(DetailView):
     queryset = Video.objects.all()
 
     def get_context_data(self, *, object_list=None, **kwargs):

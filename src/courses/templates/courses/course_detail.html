@@ -6,28 +6,39 @@ Viedo | {{ block.super }}
 
 
 {% block content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'courses:list' %}">Courses</a></li>
+  <li class="active">{{ object.title }}</li>
+</ol>
 <div class="row">
-    <div class="col-sm-6 offset-sm-3" style="background-color:#ccc">
+    <div class="col-sm-6 col-sm-offset-3" style="background-color:#ccc">
 
-        {% include 'videos/snippets/video_search_form.html' with request=request %}
+
+        {% if object.image %}
+        <img src="{{ object.image.url }}" class="img-responsive">
+        {% endif %}
+
+
         <h1>{{ object.title }}</h1>
         {{ object.description |linebreaks }}
         {% if not object.is_owner %}
         <a href="{{ object.get_purchase_url }}">Purchase</a>
-            {{ object.display_price }}
+        {{ object.display_price }}
         {% endif %}
-        <p>
-        <ul>
-            {% for item in object.lecture_set.all%}
-            <li>{{ item.order }}
-                <a href="{{ item.get_absolute_url }}">
-                    {{ item.title}}<br>
-                </a></li>
-            {% empty %}
-            <li>No lectures Found</li>
-            {% endfor %}
-        </ul>
-        </p>
+
+        <div class="row">
+            <div class="col-sm-12">
+                {% for item in object.lecture_set.all%}
+                <div class="list-group">
+
+                    <a class="list-group-item lead" href="{{ item.get_absolute_url }}">
+                        {{ item.title}} {% if item.free %}<small>Free Preview</small>{% endif %}</a>
+                    {% empty %}
+                    <p class="lead">Lectures comming soon</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

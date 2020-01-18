@@ -15,5 +15,4 @@ urlpatterns = [
     path('<cslug>/<lslug>/', LectureDetailView.as_view(), name='lecture-detail'),
     path('<slug>/edit/', CourseUpdateView.as_view(), name='update'),
     path('<slug>/delete/', CourseDeleteView.as_view(), name='delete')
-
 ]
