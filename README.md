@@ -3,7 +3,7 @@
 
 [Original source from github-codingforentreprenuers](https://github.com/codingforentrepreneurs/Srvup-2)
 - membership에 따라 동영상(온라인 강의)을 제공하는 사이트
-- 단계별로 따라하면서 기능 구
+- 단계별로 따라하면서 기능 구현
 - 내용은 [Blog](https://dev-navill.tistory.com/category/TIL%20%26%20Todo%20List/Coding%20for%20Entrepreneures)에 정리
 
 - Day-1 [Blog](https://dev-navill.tistory.com/9?category=786371) / [Github](https://github.com/navill/Srvup-2-jihoon/tree/89ded70efc1c0d4ac85c6b8f77e580d1a2fef541)
