@@ -25,16 +25,17 @@ class CourseQuerySet(models.QuerySet):
         return self.prefetch_related('lecture_set')
 
     def featured(self):
-        return self.filter(Q(category__slug__iexact='featured')| Q(secondary__slug__iexact='featured'))
+        return self.filter(Q(category__slug__iexact='featured') | Q(secondary__slug__iexact='featured'))
 
     # MyCourse에 연결된 Course를 가져오기위한 메서드
     def owned(self, user):
         if user.is_authenticated:
             qs = MyCourses.objects.filter(user=user)
+            print('if: ', qs)
         else:
             qs = MyCourses.objects.none()
         return self.prefetch_related(
-            # owned: MyCourses가 가리키고있는 Course에 대한 related_name
+            # 'owned': MyCourses가 가리키고있는 Course에 대한 related_name
             Prefetch('owned', queryset=qs, to_attr='is_owner'))
 
 
@@ -102,6 +103,7 @@ post_save.connect(post_save_course_receiver, sender=Course)
 
 
 # # 관리자의 입장에서 유저들이 등록한 courses를 나타낼 때
+# ex: course1 - user1, user2, user3, ...
 # class OwnedCourses(models.Model):
 #     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 #     courses = models.ForeignKey('Course', on_delete=models.CASCADE, blank=True)
@@ -110,6 +112,7 @@ post_save.connect(post_save_course_receiver, sender=Course)
 
 
 # 유저의 입장에서 한 명의 유저가 등록한 여러개의 courses를 나타낼 때
+# ex: user1 - course1, course2, course3, ...
 class MyCourses(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     courses = models.ManyToManyField(Course, related_name='owned', blank=True)

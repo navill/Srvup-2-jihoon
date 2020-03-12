@@ -50,6 +50,8 @@ class LectureDetailView(View):
             'course': course_,
         }
         # 소유자(MyCourse에 등록된 강좌)만 접속할 수 있도록
+        # print('Lecture_detail:', course_.is_owner)
+        # -> is_onwer가 비어있을 경우 False, 소유한 강좌가 하나라도 있을 경우 True
         if not course_.is_owner and not obj.free:  # and not user.is_member:
             return render(request, 'courses/must_purchase.html', {'object': course_})
         return render(request, 'courses/lecture_detail.html', context=context)
@@ -81,6 +83,7 @@ class CoursePurchaseView(LoginRequiredMixin, RedirectView):
         # print(qs)
         if qs.exists():
             user = self.request.user
+            print(dir(user))
             if user.is_authenticated:
                 my_courses = user.mycourses  # o2o관계이기 때문에 mycourses_set(x)
                 # ----거래에 필요한 처리----
